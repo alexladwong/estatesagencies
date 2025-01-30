@@ -34,17 +34,22 @@ function Header() {
                 </ul>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-center">
                 <Button className="flex gap-2">
                     <HousePlus className="h-5 w-5" />
                     Add New Ads
                 </Button>
 
-                    {isSignedIn?
-                    <UserButton />
-                    : <Button  className="bg-blue-700 text-white border-purple-500"  variant="outline">
-                    <LockKeyholeIcon className="h-5 w-5" />  Sign In</Button>
-                    }    
+                {isSignedIn ? (
+                <UserButton />
+                ) : (
+                <Link href="/sign-in">
+                    <Button className="bg-blue-700 text-white border-purple-500 items-center" variant="outline">
+                    <LockKeyholeIcon className="h-5 w-5" /> Sign In
+                    </Button>
+                </Link>
+                )}
+
             </div>
         </div>
     );
