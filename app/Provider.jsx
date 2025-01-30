@@ -6,7 +6,7 @@ function Provider({children}) {
     <div>
         <Header/>
 
-        <div className="mt-30 w-auto h-auto">
+        <div className="mt-28 w-auto h-auto">
             {children}
         </div>
     </div>

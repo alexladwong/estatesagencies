@@ -35,10 +35,12 @@ function Header() {
             </div>
 
             <div className="flex gap-4 items-center">
-                <Button className="flex gap-2">
-                    <HousePlus className="h-5 w-5" />
-                    Add New Ads
-                </Button>
+                <Link href="/add-new-listing">
+                    <Button className="flex gap-2">
+                        <HousePlus className="h-5 w-5" />
+                        Add New Ads
+                    </Button>
+                </Link>
 
                 {isSignedIn ? (
                 <UserButton />
