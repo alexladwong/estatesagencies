@@ -5,6 +5,10 @@ import { supabase } from '@/utils/supabase/client';
 import { useUser } from '@clerk/nextjs';
 import React from 'react'
 import { useState } from 'react'
+import { toast } from "sonner"
+import { Loader } from "lucide-react";
+
+
 
 
 
@@ -12,9 +16,9 @@ function AddNewListing() {
     const [selectedAddress, setSelectedAddress] = useState();
     const [coordinates, setCoordinates] = useState();
     const { user } = useUser();
-
+    const [loader, setLoader] = useState(false);
     const nextHandler = async () => {
-        console.log(selectedAddress, coordinates);
+            setLoader(true);
 
         // Use the actual variables, not string literals
         const { data, error } = await supabase
@@ -29,10 +33,17 @@ function AddNewListing() {
             .select();
 
         if (data) {
+            setLoader(false);
             console.log("New Data Added, ", data);
+            toast("Event has been created.")
+
         }
         if (error) {
+            setLoader(false);
             console.log("An Error Happened While submitting the Data, ", error);
+            toast("An Error Occurred in the Server. Try again later...", error)
+
+
         }
     };
 
@@ -47,9 +58,11 @@ function AddNewListing() {
                         setCoordinates={(value) => setCoordinates(value)}
                     />
                     <Button
-                        disabled={!selectedAddress || !coordinates }
+                        disabled={!selectedAddress || !coordinates || loader }
                         onClick={nextHandler}
-                    >Next</Button>
+                    >
+                        {loader?<Loader className="animate-spin" />:'Next'}
+                        </Button>
                 </div>
             </div>
         </div>
