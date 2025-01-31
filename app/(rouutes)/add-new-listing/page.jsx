@@ -48,10 +48,10 @@ function AddNewListing() {
     };
 
     return (
-        <div className="mt-10 md:mx-56 lg:mx-80">
+        <div className="mt-10 md:mx-2 lg:mx-4 sm:w-full md:w-auto">
             <div className="p-10 flex flex-col gap-5 items-center justify-center">
                 <h2 className="font-bold text-2xl">Add New List</h2>
-                <div className="w-full p-10 px-28 rounded-lg border shadow-xl flex flex-col gap-5 ">
+                <div className="w-full p-5 sm:p-10 sm:px-2 md:px-8 rounded-lg border shadow-xl flex flex-col gap-5">
                     <h2 className="text-gray-500 font-sans p-2">Enter The Place You Want to List to</h2>
                     <GooglePlace 
                         selectedAddress={(value) => setSelectedAddress(value)}
