@@ -289,14 +289,14 @@ function EditListing() {
                     />
                   </div>
                 </div>
-                <div>
+                {/* <div>
                   <h2 className="font-lg text-gray-500 my-2">
                     Upload Property Images
                   </h2>
                   <FileUpload setImages={(value) => setImages(value)}
                     imageList={listing.listingImages}
                   />
-                </div>
+                </div> */}
                 <div className="flex gap-7 justify-end">
                   <Button
                     disabled={loading}
