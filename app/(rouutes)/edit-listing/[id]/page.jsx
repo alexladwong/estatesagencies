@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useId, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -34,10 +34,8 @@ import {
 // New React Implementation
 import { useParams } from "next/navigation";
 
-
-
-function EditListing({ params }) {
-  const { id } = useParams(); 
+function EditListing() {
+  const { id } = useParams();
   const { user } = useUser();
   const router = useRouter();
   const [listing, setListing] = useState([]);
@@ -47,7 +45,7 @@ function EditListing({ params }) {
     console.log(user?.imageUrl);
     // console.log(params.split('/')[2]);
     user && verifyUserRecord();
-  }, [user]);
+  }, [user, id]);
 
   const verifyUserRecord = async () => {
     const { data, error } = await supabase
@@ -55,6 +53,7 @@ function EditListing({ params }) {
       .select("*,listingImages(listing_id,url)")
       .eq("createdBy", user?.primaryEmailAddress.emailAddress)
       .eq("id", id);
+
     if (data) {
       console.log(data);
       setListing(data[0]);
@@ -180,11 +179,7 @@ function EditListing({ params }) {
                     >
                       <SelectTrigger className="w-[180px] text-center">
                         <SelectValue
-                          placeholder={
-                            listing?.propertyType
-                              ? listing?.propertyType
-                              : "--Select Type--"
-                          }
+                          placeholder={listing?.propertyType?listing?.propertyType:"--Select Type--"}
                         />
                       </SelectTrigger>
                       <SelectContent>
@@ -298,8 +293,7 @@ function EditListing({ params }) {
                   <h2 className="font-lg text-gray-500 my-2">
                     Upload Property Images
                   </h2>
-                  <FileUpload
-                    setImages={(value) => setImages(value)}
+                  <FileUpload setImages={(value) => setImages(value)}
                     imageList={listing.listingImages}
                   />
                 </div>

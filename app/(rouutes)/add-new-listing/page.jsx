@@ -7,6 +7,7 @@ import React from 'react'
 import { useState } from 'react'
 import { toast } from "sonner"
 import { Loader } from "lucide-react";
+import { useRouter } from 'next/navigation';
 
 
 
@@ -17,6 +18,7 @@ function AddNewListing() {
     const [coordinates, setCoordinates] = useState();
     const { user } = useUser();
     const [loader, setLoader] = useState(false);
+    const router=useRouter();
     const nextHandler = async () => {
             setLoader(true);
 
