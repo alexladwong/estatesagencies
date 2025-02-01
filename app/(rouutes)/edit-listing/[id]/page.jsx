@@ -31,9 +31,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+// New React Implementation
+import { useParams } from "next/navigation";
+
 
 
 function EditListing({ params }) {
+  const { id } = useParams(); 
   const { user } = useUser();
   const router = useRouter();
   const [listing, setListing] = useState([]);
@@ -50,7 +54,7 @@ function EditListing({ params }) {
       .from("listing")
       .select("*,listingImages(listing_id,url)")
       .eq("createdBy", user?.primaryEmailAddress.emailAddress)
-      .eq("id", params.id);
+      .eq("id", id);
     if (data) {
       console.log(data);
       setListing(data[0]);
@@ -65,7 +69,7 @@ function EditListing({ params }) {
     const { data, error } = await supabase
       .from("listing")
       .update(formValue)
-      .eq("id", params.id)
+      .eq("id", id)
       .select();
 
     if (data) {
@@ -111,7 +115,7 @@ function EditListing({ params }) {
     const { data, error } = await supabase
       .from("listing")
       .update({ active: true })
-      .eq("id", params?.id)
+      .eq("id", id)
       .select();
 
     if (data) {

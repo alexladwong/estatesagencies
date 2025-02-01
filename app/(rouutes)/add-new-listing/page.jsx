@@ -33,9 +33,14 @@ function AddNewListing() {
             .select();
 
         if (data) {
-            setLoader(false);
-            console.log("New Data Added, ", data);
-            toast("Event has been created.")
+            if(data)
+            {
+                setLoader(false)
+                console.log("New Data added,",data);  
+                toast("New Address added for listing");
+                router.replace('/edit-listing/'+data[0].id);
+                console.log("New Data Added: ", data);
+            }
 
         }
         if (error) {
