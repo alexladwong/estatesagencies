@@ -59,55 +59,88 @@ function EditListing() {
       setListing(data[0]);
     }
     if (data?.length <= 0) {
-      router.replace("/");
+      router.replace("");
     }
   };
 
   const onSubmitHandler = async (formValue) => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("listing")
-      .update(formValue)
-      .eq("id", id)
-      .select();
+    try {
+        setLoading(true);
 
-    if (data) {
-      console.log(data);
-      toast("Listing updated and Published");
-      setLoading(false);
-    }
-    for (const image of images) {
-      setLoading(true);
-      const file = image;
-      const fileName = Date.now().toString();
-      const fileExt = fileName.split(".").pop();
-      const { data, error } = await supabase.storage
-        .from("listingImages")
-        .upload(`${fileName}`, file, {
-          contentType: `image/${fileExt}`,
-          upsert: false,
-        });
+        // Update the listing
+        const { data: updateData, error: updateError } = await supabase
+            .from('listing')
+            .update(formValue)
+            .eq('id', id)
+            .select();
 
-      if (error) {
-        setLoading(false);
-        toast("Error while uploading images");
-      } else {
-        const imageUrl = process.env.NEXT_PUBLIC_IMAGE_URL + fileName;
-        const { data, error } = await supabase
-          .from("listingImages")
-          .insert([{ url: imageUrl, listing_id: params?.id }])
-          .select();
-
-        if (data) {
-          setLoading(false);
+        if (updateError) {
+            console.log("Listing update error:", updateError);
+            toast("Error updating listing");
+            setLoading(false);
+            return;
         }
-        if (error) {
-          setLoading(false);
+
+        if (updateData) {
+            console.log("Listing updated:", updateData);
+            toast("Listing updated and Published");
         }
+
+        if (!images || images.length === 0) {
+            toast("No images selected!");
+            setLoading(false);
+            return;
+        }
+
+        for (const image of images) {
+          const file = image;
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}.${fileExt}`;
+      
+          const { data: uploadData, error: uploadError } = await supabase.storage
+              .from('listingImages')
+              .upload(fileName, file, { contentType: file.type, upsert: false });
+      
+          if (uploadError) {
+              console.error("Image upload error:", uploadError);
+              toast("Error uploading image");
+              continue; // Skip to the next image
+          }
+      
+          const imageUrl = `${process.env.NEXT_PUBLIC_IMAGE_URL}${fileName}`;
+          const listingId = formValue?.id || formValue?.listing_id || null;
+      
+          if (!listingId) {
+              console.log("Invalid listing ID:", formValue);
+              toast("Invalid listing ID");
+              continue;
+          }
+      
+          const { data: insertData, error: insertError } = await supabase
+              .from('listingImages')
+              .insert([{ url: imageUrl, listing_id: listingId }])
+              .select();
+      
+          if (insertError) {
+              console.error("Error inserting image URL:", insertError);
+              toast("Error saving image");
+          } else {
+              console.log("Image saved:", insertData);
+          }
       }
-      setLoading(false);
+      
+      
+
+        setLoading(false);
+    } catch (err) {
+        console.error("Unexpected error:", err);
+        toast("An unexpected error occurred.");
+        setLoading(false);
     }
-  };
+};
+
+
+
 
   const publishBtnHandler = async () => {
     setLoading(true);
@@ -289,14 +322,14 @@ function EditListing() {
                     />
                   </div>
                 </div>
-                {/* <div>
+                <div>
                   <h2 className="font-lg text-gray-500 my-2">
-                    Upload Property Images
+                    Upload Property Images Here
                   </h2>
                   <FileUpload setImages={(value) => setImages(value)}
-                    imageList={listing.listingImages}
+                     imageList={listing?.listingImages ?? []} 
                   />
-                </div> */}
+                </div>
                 <div className="flex gap-7 justify-end">
                   <Button
                     disabled={loading}

@@ -27,9 +27,9 @@ export default function Page() {
           Welcome Back to Real Estate Agencies
         </h1>
 
-        <p className="mt-10 leading-relaxed text-gray-300">
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eligendi nam dolorum aliquam,
-          quibusdam aperiam voluptatum.
+        <p className="mt-8 mb-3 items-center justify-center leading-relaxed text-gray-400">
+          
+            Welcome to Our Premier Real Estate Agency – Where Your Dream Home Awaits!
         </p>
 
         <SignIn />

@@ -26,7 +26,7 @@ function FileUpload({setImages,imageList}) {
                 <input id="dropzone-file" type="file"
                     multiple className="hidden"
                     onChange={handleFileUpload}
-                    accept="image/png, image/gif, image/jpeg"
+                    accept="image/png, image/gif, image/jpeg, image/webp"
                 />
             </label>
         </div>
@@ -41,7 +41,7 @@ function FileUpload({setImages,imageList}) {
                 </div>
             ))}
         </div>
-      {imageList&&  <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5
+        {imageList&&  <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5
         lg:grid-cols-7 xl:grid-cols-10 gap-3 mt-3'>
             {imageList.map((image,index)=>(
                 <div key={index}>

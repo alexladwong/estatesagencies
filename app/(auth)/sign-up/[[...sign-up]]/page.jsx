@@ -18,18 +18,15 @@ export default function Page() {
       className="block max-h-full items-center justify-center px-3  sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6"
     >
       <div className="flex flex-col items-center justify-center w-full max-w-3xl px-4 md:px-8 lg:max-w-4xl text-center">
-        <a className="block text-blue-600" href="#">
-          <span className="sr-only">Home</span>
-          {/* <img src="/logo.png" className='w-20' alt="Logo" /> */}
-        </a>
+        
 
         <h1 className="mt-10 leading-relaxed font-bold text-blue-600 sm:text-3xl md:text-4xl">
           We Welcome You to our Real Estate Agencies
         </h1>
 
-        <p className="mt-10 leading-relaxed text-purple-500">
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eligendi nam dolorum aliquam,
-          quibusdam aperiam voluptatum.
+        <p className="mt-5 mb-2 leading-relaxed text-purple-600">
+        Welcome to Our Top-Rated Real Estate Agency –  Whether you're buying, selling, or investing, our expert team is here to guide you every step of the way.
+Don't just settle—choose excellence, trust, and unmatched service. Let’s turn your real estate dreams into reality today! 🚀✨
         </p>
 
         <SignUp />
