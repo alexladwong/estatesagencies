@@ -75,4 +75,30 @@ const verifyUserRecord = async () => {
     console.log("Listing found:", listingData);
     setListing(listingData);
   };
+
+
+
+  //  Solution 3
+  const verifyUserRecord = async () => {
+      const { data, error } = await supabase
+          .from('listing')
+          .select('*,listingImages(listing_id,url)')
+          .eq('createdBy', user?.primaryEmailAddress.emailAddress)
+          .eq('id', id);
+      if (data) {
+          console.log(data)
+          setListing(data[0]);
+      }
+      if (data.length <= 0) {
+          router.replace('/')
+      }
+  }
   
+
+
+  <Link href="/sign-in">
+        <Button className="bg-blue-700 text-white border-purple-500 flex gap-2 items-center">
+            <LockKeyhole className="h-5 w-5" />
+            Sign In
+        </Button>
+  </Link>

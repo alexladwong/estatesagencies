@@ -34,127 +34,126 @@ import {
 // New React Implementation
 import { useParams } from "next/navigation";
 
-function EditListing() {
+function EditListing({params}) {
   const { id } = useParams();
-  const { user } = useUser();
   const router = useRouter();
+  const { user } = useUser();
   const [listing, setListing] = useState([]);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    console.log(user?.imageUrl);
-    // console.log(params.split('/')[2]);
-    user && verifyUserRecord();
-  }, [user, id]);
+    // console.log("ID from useParams:", id);
+    if (user && id) verifyUserRecord();
+  }, [user]);
 
   const verifyUserRecord = async () => {
+    if (!user?.primaryEmailAddress?.emailAddress || !id) {
+      console.warn("Invalid user or listing ID.");
+      router.replace("/");
+      return;
+    }
+  
     const { data, error } = await supabase
       .from("listing")
-      .select("*,listingImages(listing_id,url)")
-      .eq("createdBy", user?.primaryEmailAddress.emailAddress)
-      .eq("id", id);
-
-    if (data) {
-      console.log(data);
-      setListing(data[0]);
+      .select("createdBy") // Only fetch `createdBy` for efficiency
+      .eq("id", id)
+      .single();
+  
+    if (error || !data || data.createdBy !== user.primaryEmailAddress.emailAddress) {
+      console.warn("Unauthorized access. Redirecting...");
+      toast.warn("Unauthorized access. Redirecting...");
+      router.replace("/");
+      return;
     }
-    if (data?.length <= 0) {
-      router.replace("");
+  
+    // Fetch full listing details only if authorized
+    const { data: listingData, error: listingError } = await supabase
+      .from("listing")
+      .select("*, listingImages(listing_id, url)")
+      .eq("id", id)
+      .single();
+  
+    if (listingError) {
+      console.error("Error fetching listing details:", listingError);
+      router.replace("/");
+      return;
     }
+  
+    console.log("Listing found:", listingData);
+    setListing(listingData);
   };
 
-  const onSubmitHandler = async (formValue) => {
-    try {
-        setLoading(true);
+// On submission
 
-        // Update the listing
-        const { data: updateData, error: updateError } = await supabase
-            .from('listing')
-            .update(formValue)
-            .eq('id', id)
-            .select();
-
-        if (updateError) {
-            console.log("Listing update error:", updateError);
-            toast("Error updating listing");
-            setLoading(false);
-            return;
-        }
-
-        if (updateData) {
-            console.log("Listing updated:", updateData);
-            toast("Listing updated and Published");
-        }
-
-        if (!images || images.length === 0) {
-            toast("No images selected!");
-            setLoading(false);
-            return;
-        }
-
-        for (const image of images) {
-          const file = image;
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${Date.now()}.${fileExt}`;
-      
-          const { data: uploadData, error: uploadError } = await supabase.storage
-              .from('listingImages')
-              .upload(fileName, file, { contentType: file.type, upsert: false });
-      
-          if (uploadError) {
-              console.error("Image upload error:", uploadError);
-              toast("Error uploading image");
-              continue; // Skip to the next image
-          }
-      
-          const imageUrl = `${process.env.NEXT_PUBLIC_IMAGE_URL}${fileName}`;
-          const listingId = formValue?.id || formValue?.listing_id || null;
-      
-          if (!listingId) {
-              console.log("Invalid listing ID:", formValue);
-              toast("Invalid listing ID");
-              continue;
-          }
-      
-          const { data: insertData, error: insertError } = await supabase
-              .from('listingImages')
-              .insert([{ url: imageUrl, listing_id: listingId }])
-              .select();
-      
-          if (insertError) {
-              console.error("Error inserting image URL:", insertError);
-              toast("Error saving image");
-          } else {
-              console.log("Image saved:", insertData);
-          }
-      }
-      
-      
-
-        setLoading(false);
-    } catch (err) {
-        console.error("Unexpected error:", err);
-        toast("An unexpected error occurred.");
-        setLoading(false);
-    }
-};
-
-
-
-
-  const publishBtnHandler = async () => {
+const onSubmitHandler = async (formValue) => {
     setLoading(true);
     const { data, error } = await supabase
-      .from("listing")
-      .update({ active: true })
-      .eq("id", id)
-      .select();
+        .from('listing')
+        .update(formValue)
+        .eq('id', id)
+        .select();
 
     if (data) {
-      setLoading(false);
-      toast("Listing published!");
+        console.log(data);
+        toast('Listing updated and Published');
+        setLoading(false)
     }
-  };
+    for (const image of images) {
+        setLoading(true)
+        const file = image;
+        const fileName = Date.now().toString();
+        const fileExt = fileName.split('.').pop();
+        const { data, error } = await supabase.storage
+            .from('listingImages')
+            .upload(`${fileName}`, file, {
+                contentType: `image/${fileExt}`,
+                upsert: false
+            });
+
+        if (error) {
+            setLoading(false)
+            toast('Error while uploading images')
+        }
+
+        else {
+
+            const imageUrl = process.env.NEXT_PUBLIC_IMAGE_URL + fileName;
+            const { data, error } = await supabase
+                .from('listingImages')
+                .insert([
+                    { url: imageUrl, listing_id: params?.id }
+                ])
+                .select();
+
+            if (data) {
+                setLoading(false);
+            }
+            if (error) {
+                setLoading(false)
+            }
+
+        }
+        setLoading(false);
+    }
+
+}
+
+const publishBtnHandler=async()=>{
+    setLoading(true)
+    const { data, error } = await supabase
+    .from('listing')
+    .update({ active: true })
+    .eq('id', id)
+    .select()
+
+    if(data)
+    {
+        setLoading(false)
+        toast('Listing published!')
+    }
+    
+}
 
   return (
     <div className="px-10 md:px-36 my-10">
